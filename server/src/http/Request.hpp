@@ -1,8 +1,6 @@
 #pragma once
 
 // Request interface
-#include <optional>
-#include <string>
 #include "HttpTypes.hpp"
 
 class Get;

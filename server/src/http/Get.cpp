@@ -1,6 +1,5 @@
 #include "Get.hpp"
 #include "Request.hpp"
-#include <algorithm>
 #include <cctype>
 #include <cstddef>
 #include <cstdio>
@@ -17,8 +16,8 @@ void Get::setRequestLine(RequestLine){};
 void Get::setHeader(Header){};
 
 Get Get::parse(char buffer[1024]) {
-  RequestLine rq;
-  Header h;
+  RequestLine rqLine;
+  Header header;
 
   printf("\n%s\n\n", buffer);
 
@@ -47,10 +46,12 @@ Get Get::parse(char buffer[1024]) {
       token = (char *)temp;
       token[size] = '\0';
 
-      std::string *fields[] = {&rq.method, &rq.path, &rq.version};
+      std::string *rqL[] = {&rqLine.method, &rqLine.path, &rqLine.version};
+      std::string *h[] = {&header.host, &header.userAgent, &header.accept, &header.acceptLanguage, &header.connection};
       if (t < 3) {
-        *fields[t] = token;
-      }
+        *rqL[t] = token;
+      }  //TODO: read header tokens
+
       t++;
       size = 0;
       free(token);
