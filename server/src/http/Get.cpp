@@ -31,7 +31,7 @@ Get Get::parse(char buffer[1024]) {
   for (int i = 0; i < 23; i++) {
     if (!isspace(buffer[i])) {
       void *temp = std::realloc(token, ++size);
-      if (temp == nullptr) {
+      if (temp == NULL) {
         free(token);
         break;
       } else {
@@ -40,28 +40,27 @@ Get Get::parse(char buffer[1024]) {
       }
     } else if (isspace(buffer[i])) {
       void *temp = std::realloc(token, size + 1);
+      if (temp == NULL) {
+        free(token);
+        break;
+      }
       token = (char *)temp;
       token[size] = '\0';
-      if (t == 0) {
-        rq.method = token;
-        printf("Method: %s ", rq.method.c_str());
-      } else if (t == 1) {
-        rq.path = token;
-        printf("Path: %s ", rq.path.c_str());
-      } else if (t == 2) {
-        rq.version = token;
-        printf("Version: %s\n", rq.version.c_str());
+
+      std::string *fields[] = {&rq.method, &rq.path, &rq.version};
+      if (t < 3) {
+        *fields[t] = token;
       }
       t++;
       size = 0;
-
-      printf("\n");
       free(token);
       token = (char *)std::malloc(size);
     } else {
       free(token);
     }
   }
+  printf("Method: %s, Path: %s, Version: %s\n", rq.method.c_str(),
+         rq.path.c_str(), rq.version.c_str());
   if (token != NULL) {
     free(token);
   }
