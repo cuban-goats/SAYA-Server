@@ -75,16 +75,15 @@ void handleConnection(int client_fd) {
   send(client_fd, "Hello from server", strlen("Hello from server"), 0);
 }
 
-// read from the correct requested html
-// return the webiste
-// look into webassembly maybe
 void process(std::string rawReq) {
   // size_t str = std::find_first_of(rawReq, "GET");
 }
 
-// determine what type of request it is (GET, POST, ...) -> call the
-// corresponding processing funciton validate correct request format with
-// header, ...
-void validate(std::string request) {}
+void validate(std::string request) {
+  // read until first " " then decide type of request
+  //
+  // corresponding processing funciton validate correct request format with
+  // header, ...
+}
 
 } // namespace http

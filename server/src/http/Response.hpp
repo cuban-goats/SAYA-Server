@@ -10,12 +10,12 @@ struct RequestLine {
 };
 
 struct Header {
+  std::string date;
   std::string host;
-  std::string userAgent;
-  std::string accept;
-  std::string acceptLanguage;
+  std::string contentType;
+  std::string contentLength;
+  std::string cacheControl;
   std::string connection;
-
   // separator line to body
 };
 
@@ -23,7 +23,7 @@ struct Body {
   std::string body; // where the html goes
 };
 
-class Request {
+class Response {
 public:
   virtual RequestLine getRequestLine();
   virtual Header getHeader();
@@ -33,6 +33,6 @@ public:
   virtual void setHeader(Header);
   virtual std::optional<void> setBody(std::string);
 
-  virtual Request parse(char buffer[1024]);
+  virtual void parse(char buffer[1024]);
   virtual void byteEncode(); // encodes all information including headers, etc.
 };
