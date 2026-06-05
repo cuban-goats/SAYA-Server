@@ -2,7 +2,8 @@
 #include <unistd.h>
 
 int main() {
-  int e = http::create();
+  // int e = http::create();
+  http::test();
 
   return 0;
 }

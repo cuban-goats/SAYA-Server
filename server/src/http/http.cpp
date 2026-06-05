@@ -1,4 +1,5 @@
 #include "./http.hpp"
+#include "./Get.hpp"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -84,6 +85,12 @@ void validate(std::string request) {
   //
   // corresponding processing funciton validate correct request format with
   // header, ...
+}
+
+void test() {
+  Get get = *new Get;
+  char buffer[1024] = "GET /products HTTP/1.1 ";
+  Get parsed = get.parse(buffer);
 }
 
 } // namespace http

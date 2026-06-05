@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(server
     src/main.cpp
     src/http/http.cpp
+    src/http/Get.cpp
 )
 
 target_include_directories(server PRIVATE include)
