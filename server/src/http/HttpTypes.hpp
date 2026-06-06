@@ -13,6 +13,7 @@ struct Header {
   std::string userAgent;
   std::string accept;
   std::string acceptLanguage;
+  std::string acceptEncoding;
   std::string connection;
 
   // separator line to body

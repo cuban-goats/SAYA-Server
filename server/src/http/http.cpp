@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <netinet/in.h>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -71,7 +72,18 @@ int create() {
 // read request from client and process it
 void handleConnection(int client_fd) {
   char buffer[1024] = {0};
-  read(client_fd, buffer, 1024);
+  std::string raw;
+  while (true) {
+    int r = read(client_fd, buffer, sizeof(buffer));
+    if (r <= 0) {
+      break;
+    }
+    raw.append(buffer, r);
+    if (raw.find("\r\n\r\n") != std::string::npos) {
+      break;
+    }
+    // process
+  }
   std::cout << "Client Request for: " << buffer << std::endl;
   send(client_fd, "Hello from server", strlen("Hello from server"), 0);
 }
@@ -89,8 +101,11 @@ void validate(std::string request) {
 
 void test() {
   Get get = *new Get;
-  char buffer[1024] = "GET /products HTTP/1.1\r\nhost userAgent\r\naccept acceptLanguage connection\r\n";
-  Get parsed = get.parse(buffer);
+  std::string buffer = "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
+                       "userAgent\r\nAccept: accept\r\nAccept-Language: "
+                       "acceptLang\r\nAccept-Encoding: "
+                       "acceptEnc\r\nConnection: connected\r\n\r\n";
+  Get parsed = get.parseByLine(buffer);
 }
 
 } // namespace http
