@@ -89,7 +89,7 @@ void validate(std::string request) {
 
 void test() {
   Get get = *new Get;
-  char buffer[1024] = "GET /products HTTP/1.1 ";
+  char buffer[1024] = "GET /products HTTP/1.1\r\nhost userAgent\r\naccept acceptLanguage connection\r\n";
   Get parsed = get.parse(buffer);
 }
 

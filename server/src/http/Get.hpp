@@ -15,4 +15,6 @@ public:
 
   Get parse(char buffer[1024]);
   void byteEncode() override;
+
+  void skipNewLine(int i, char buffer[1024]);
 };

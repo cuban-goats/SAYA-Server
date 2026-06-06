@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 // find out what to set the size to
 // check if char is " ", if not save the char (allocate mem for it)
@@ -21,14 +22,21 @@ Get Get::parse(char buffer[1024]) {
 
   printf("\n%s\n\n", buffer);
 
+  char *line = buffer;
+  char *next;
+
   int s = 0;
   size_t size = 0;
   int t = 0; // tokenCounter
 
   char *token = (char *)std::malloc(size);
 
-  for (int i = 0; i < 23; i++) {
-    if (!isspace(buffer[i])) {
+  int bufLen = 1024;
+
+  for (int i = 0; i < bufLen; i++) {
+    if (buffer[i] == '\r') {
+      skipNewLine(i, buffer);
+    } else if (!isspace(buffer[i])) {
       void *temp = std::realloc(token, ++size);
       if (temp == NULL) {
         free(token);
@@ -47,10 +55,13 @@ Get Get::parse(char buffer[1024]) {
       token[size] = '\0';
 
       std::string *rqL[] = {&rqLine.method, &rqLine.path, &rqLine.version};
-      std::string *h[] = {&header.host, &header.userAgent, &header.accept, &header.acceptLanguage, &header.connection};
+      std::string *h[] = {&header.host, &header.userAgent, &header.accept,
+                          &header.acceptLanguage, &header.connection};
       if (t < 3) {
         *rqL[t] = token;
-      }  //TODO: read header tokens
+      } else if (t < 8) {
+        *h[t - 3] = token;
+      }
 
       t++;
       size = 0;
@@ -60,8 +71,12 @@ Get Get::parse(char buffer[1024]) {
       free(token);
     }
   }
-  printf("Method: %s, Path: %s, Version: %s\n", rq.method.c_str(),
-         rq.path.c_str(), rq.version.c_str());
+  printf("Method: %s, Path: %s, Version: %s\n", rqLine.method.c_str(),
+         rqLine.path.c_str(), rqLine.version.c_str());
+  printf(
+      "Host: %s, UserAgent: %s, Accept: %s, AcceptLanguage: %s, Connection: %s",
+      header.host.c_str(), header.userAgent.c_str(), header.accept.c_str(),
+      header.acceptLanguage.c_str(), header.connection.c_str());
   if (token != NULL) {
     free(token);
   }
@@ -70,6 +85,13 @@ Get Get::parse(char buffer[1024]) {
   result.rq = rq;
   result.h = h;
   return result;
+};
+
+void Get::skipNewLine(int i, char buffer[1024]) {
+  buffer[i] = ' ';
+  if (i + 1 <= strlen(buffer) && buffer[i + 1] == '\n') {
+    buffer[i] = ' ';
+  }
 };
 
 void Get::byteEncode() {};
