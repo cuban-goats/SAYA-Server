@@ -33,6 +33,5 @@ public:
   virtual void setHeader(Header);
   virtual std::optional<void> setBody(std::string);
 
-  virtual void parse(char buffer[1024]);
   virtual void byteEncode(); // encodes all information including headers, etc.
 };

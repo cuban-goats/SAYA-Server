@@ -9,11 +9,11 @@ public:
   Body b;
 
   RequestLine getRequestLine() override;
-  Header getHeader() override;
+  std::map<std::string, std::string> getHeaders() override;
   std::string getBody();
 
-  void getRequestLine(RequestLine);
-  void getHeader(Header);
+  void setRequestLine(RequestLine);
+  void setHeader(Header);
   void setBody(Header);
 
   Post parse(char buffer[1024]);

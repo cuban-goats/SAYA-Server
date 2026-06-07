@@ -1,5 +1,5 @@
 #include "./http.hpp"
-#include "./Get.hpp"
+#include "./request//GetRq.hpp"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -100,12 +100,12 @@ void validate(std::string request) {
 }
 
 void test() {
-  Get get = *new Get;
+  GetRq get = *new GetRq;
   std::string buffer = "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
                        "userAgent\r\nAccept: accept\r\nAccept-Language: "
                        "acceptLang\r\nAccept-Encoding: "
                        "acceptEnc\r\nConnection: connected\r\n\r\n";
-  Get parsed = get.parseByLine(buffer);
+  GetRq parsed = get.parseByLine(buffer);
 }
 
 } // namespace http
