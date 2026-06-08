@@ -13,6 +13,5 @@ public:
                               std::string version) = 0;
   virtual void setHeaders(std::map<std::string, std::string> headers) = 0;
 
-  virtual void
-  byteEncode() = 0; // encodes all information including headers, etc.
+  virtual void byteEncode() = 0;
 };

@@ -19,10 +19,10 @@ public:
   GetRq parseByLine(std::string buffer);
   void byteEncode() override;
 
-  void skipNewLine(int i, char buffer[1024]);
   void printI(GetRq request);
   std::string getNextLine(const std::string &raw, size_t &pos);
 
   //----------------------------------------
   GetRq parse(char buffer[1024]);
+  void skipNewLine(int i, char buffer[1024]);
 };

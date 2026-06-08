@@ -8,6 +8,12 @@ struct RequestLine {
   std::string version;
 };
 
+struct Body {
+  std::string body;
+};
+
+//-----------------------------------
+
 struct Header {
   std::string host;
   std::string userAgent;
@@ -17,8 +23,4 @@ struct Header {
   std::string connection;
 
   // separator line to body
-};
-
-struct Body {
-  std::string body;
 };

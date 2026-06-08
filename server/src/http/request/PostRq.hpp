@@ -5,7 +5,7 @@
 class Post : public Request {
 public:
   RequestLine rq;
-  Header h;
+  std::string h;
   Body b;
 
   RequestLine getRequestLine() override;
@@ -13,8 +13,8 @@ public:
   std::string getBody();
 
   void setRequestLine(RequestLine);
-  void setHeader(Header);
-  void setBody(Header);
+  void setHeader(std::map<std::string, std::string>);
+  void setBody(std::string);
 
   Post parse(char buffer[1024]);
   void byteEncode() override;
