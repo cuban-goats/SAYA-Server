@@ -1,9 +1,11 @@
 #include "./http.hpp"
 #include "./request//GetRq.hpp"
+#include "./response/GetRes.hpp"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
@@ -106,6 +108,17 @@ void test() {
                        "acceptLang\r\nAccept-Encoding: "
                        "acceptEnc\r\nConnection: connected\r\n\r\n";
   GetRq parsed = get.parseByLine(buffer);
+
+  std::map<std::string, std::string> testHeaders = {
+      {"Host", "host"}, {"User-Agent", "userAgent"}};
+  GetRes res = *new GetRes(
+      {
+          "HTTP/1.1",
+          404,
+          "Not Found",
+      },
+      testHeaders, {"body"});
+  res.tcpStringify();
 }
 
 } // namespace http

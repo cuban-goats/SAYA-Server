@@ -1,7 +1,7 @@
 #pragma once
 
 // Request interface
-#include "HttpTypes.hpp"
+#include "../HttpTypes.hpp"
 #include <map>
 
 class Request {

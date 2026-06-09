@@ -8,6 +8,12 @@ struct RequestLine {
   std::string version;
 };
 
+struct StatusLine {
+  std::string version;
+  uint16_t statusCode;
+  std::string reasonPhrase;
+};
+
 struct Body {
   std::string body;
 };
@@ -21,6 +27,4 @@ struct Header {
   std::string acceptLanguage;
   std::string acceptEncoding;
   std::string connection;
-
-  // separator line to body
 };

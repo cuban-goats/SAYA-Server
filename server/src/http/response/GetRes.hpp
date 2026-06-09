@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HttpTypes.hpp"
+#include "../HttpTypes.hpp"
 #include "Response.hpp"
 
 class GetRes : public Response {
@@ -21,5 +21,6 @@ public:
 
   void addHeader(std::string, std::string);
 
+  std::string tcpStringify();
   void byteEncode() override; // encodes all information including headers, etc.
 };

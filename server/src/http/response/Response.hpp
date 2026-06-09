@@ -1,7 +1,7 @@
 #pragma once
 
 // Request interface
-#include "HttpTypes.hpp"
+#include "../HttpTypes.hpp"
 #include <map>
 
 class Response {
@@ -14,7 +14,7 @@ public:
   virtual void setHeader(std::map<std::string, std::string>) = 0;
   virtual void setBody(Body) = 0;
 
-  virtual void byteEncode() = 0; // encodes all information including headers, etc.
+  virtual void byteEncode() = 0;
 
   virtual ~Response() = default;
 };
