@@ -1,9 +1,13 @@
 #include "./http.hpp"
+#include "./request//GetRq.hpp"
+#include "./response/GetRes.hpp"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <netinet/in.h>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -70,21 +74,68 @@ int create() {
 // read request from client and process it
 void handleConnection(int client_fd) {
   char buffer[1024] = {0};
-  read(client_fd, buffer, 1024);
+  std::string raw;
+  while (true) {
+    int r = read(client_fd, buffer, sizeof(buffer));
+    if (r <= 0) {
+      break;
+    }
+    raw.append(buffer, r);
+    if (raw.find("\r\n\r\n") != std::string::npos) {
+      break;
+    }
+  }
+  process(buffer);
   std::cout << "Client Request for: " << buffer << std::endl;
   send(client_fd, "Hello from server", strlen("Hello from server"), 0);
 }
 
-// read from the correct requested html
-// return the webiste
-// look into webassembly maybe
 void process(std::string rawReq) {
-  // size_t str = std::find_first_of(rawReq, "GET");
+  size_t methodEnd = rawReq.find(" ", 0);
+  std::string method = rawReq.substr(0, methodEnd);
+
+  if (method == "GET") {
+    GetRes res = processGET(rawReq);
+  } else if (method == "POST") {
+    std::cout << "POST not implemented yet ..." << std::endl;
+  } else {
+    std::cout << "Invalid request method ..." << std::endl;
+  }
 }
 
-// determine what type of request it is (GET, POST, ...) -> call the
-// corresponding processing funciton validate correct request format with
-// header, ...
-void validate(std::string request) {}
+GetRes processGET(std::string raw) {
+  std::cout << "processing GET request ..." << std::endl;
+  GetRq get = *new GetRq(raw);
+
+  std::map<std::string, std::string> testHeaders = {
+      {"Host", "host"}, {"User-Agent", "userAgent"}};
+  return *new GetRes(
+      {
+          "HTTP/1.1",
+          404,
+          "Not Found",
+      },
+      testHeaders, {"body"});
+}
+
+void test() {
+  std::string testBuffer =
+      "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
+      "userAgent\r\nAccept: accept\r\nAccept-Language: "
+      "acceptLang\r\nAccept-Encoding: "
+      "acceptEnc\r\nConnection: connected\r\n\r\n";
+  GetRq get = *new GetRq(testBuffer);
+
+  std::map<std::string, std::string> testHeaders = {
+      {"Host", "host"}, {"User-Agent", "userAgent"}};
+  GetRes res = *new GetRes(
+      {
+          "HTTP/1.1",
+          404,
+          "Not Found",
+      },
+      testHeaders, {"body"});
+  res.tcpStringify();
+}
 
 } // namespace http
