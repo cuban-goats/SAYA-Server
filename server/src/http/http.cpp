@@ -84,30 +84,47 @@ void handleConnection(int client_fd) {
     if (raw.find("\r\n\r\n") != std::string::npos) {
       break;
     }
-    // process
   }
+  process(buffer);
   std::cout << "Client Request for: " << buffer << std::endl;
   send(client_fd, "Hello from server", strlen("Hello from server"), 0);
 }
 
 void process(std::string rawReq) {
-  // size_t str = std::find_first_of(rawReq, "GET");
+  size_t methodEnd = rawReq.find(" ", 0);
+  std::string method = rawReq.substr(0, methodEnd);
+
+  if (method == "GET") {
+    GetRes res = processGET(rawReq);
+  } else if (method == "POST") {
+    std::cout << "POST not implemented yet ..." << std::endl;
+  } else {
+    std::cout << "Invalid request method ..." << std::endl;
+  }
 }
 
-void validate(std::string request) {
-  // read until first " " then decide type of request
-  //
-  // corresponding processing funciton validate correct request format with
-  // header, ...
+GetRes processGET(std::string raw) {
+  std::cout << "processing GET request ..." << std::endl;
+  GetRq get = *new GetRq(raw);
+
+  std::map<std::string, std::string> testHeaders = {
+      {"Host", "host"}, {"User-Agent", "userAgent"}};
+  return *new GetRes(
+      {
+          "HTTP/1.1",
+          404,
+          "Not Found",
+      },
+      testHeaders, {"body"});
 }
 
 void test() {
-  GetRq get = *new GetRq;
-  std::string buffer = "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
-                       "userAgent\r\nAccept: accept\r\nAccept-Language: "
-                       "acceptLang\r\nAccept-Encoding: "
-                       "acceptEnc\r\nConnection: connected\r\n\r\n";
-  GetRq parsed = get.parseByLine(buffer);
+  std::string testBuffer =
+      "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
+      "userAgent\r\nAccept: accept\r\nAccept-Language: "
+      "acceptLang\r\nAccept-Encoding: "
+      "acceptEnc\r\nConnection: connected\r\n\r\n";
+  GetRq get = *new GetRq(testBuffer);
 
   std::map<std::string, std::string> testHeaders = {
       {"Host", "host"}, {"User-Agent", "userAgent"}};

@@ -1,4 +1,5 @@
 #include "GetRq.hpp"
+#include "../HttpTypes.hpp"
 #include <cctype>
 #include <cstddef>
 #include <cstdio>
@@ -9,6 +10,8 @@
 // find out what to set the size to
 // check if char is " ", if not save the char (allocate mem for it)
 // if " " save the part into the request object
+
+GetRq::GetRq(std::string raw) { parseByLine(raw); };
 
 RequestLine GetRq::getRequestLine() { return rq; };
 std::map<std::string, std::string> GetRq::getHeaders() { return headers; };
@@ -24,16 +27,15 @@ void GetRq::setHeaders(std::map<std::string, std::string> headersI) {
   headers = headersI;
 };
 
-GetRq GetRq::parseByLine(std::string buffer) {
-  GetRq result;
+void GetRq::parseByLine(std::string buffer) {
   size_t pos = 0;
 
   size_t endOMethod = buffer.find(" ", pos) + 1;
   size_t endOPath = buffer.find(" ", endOMethod) + 1;
   size_t endOVersion = buffer.find("\r\n", endOPath);
-  result.setRequestLine(buffer.substr(pos, endOMethod - 1),
-                        buffer.substr(endOMethod, endOPath - endOMethod - 1),
-                        buffer.substr(endOPath, endOVersion - endOPath));
+  setRequestLine(buffer.substr(pos, endOMethod - 1),
+                 buffer.substr(endOMethod, endOPath - endOMethod - 1),
+                 buffer.substr(endOPath, endOVersion - endOPath));
 
   pos = endOVersion + 2;
 
@@ -49,12 +51,9 @@ GetRq GetRq::parseByLine(std::string buffer) {
       continue;
     name = line.substr(0, i);
     value = line.substr(i + 2);
-    result.headers.insert({name, value});
+    headers.insert({name, value});
   }
-
-  printI(result);
-
-  return result;
+  printI(*this);
 };
 
 std::string GetRq::getNextLine(const std::string &raw, size_t &pos) {
@@ -81,7 +80,6 @@ void GetRq::byteEncode() {};
 //---------------------------------------------------------
 
 GetRq GetRq::parse(char buffer[1024]) {
-  GetRq result;
   RequestLine rq;
   Header h;
   printf("\n%s\n\n", buffer);

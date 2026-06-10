@@ -14,6 +14,7 @@ public:
   StatusLine getStatusLine() override;
   std::map<std::string, std::string> getHeader() override;
   Body getBody() override;
+  size_t getBodyBytes() override;
 
   void setStatusLine(StatusLine) override;
   void setHeader(std::map<std::string, std::string>) override;
@@ -22,5 +23,4 @@ public:
   void addHeader(std::string, std::string);
 
   std::string tcpStringify();
-  void byteEncode() override; // encodes all information including headers, etc.
 };
