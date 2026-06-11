@@ -178,6 +178,7 @@ std::optional<std::string> serve(std::string filePath) {
     filePath = filePath.substr(1);
   }
   p.append(filePath);
+  p = fs::absolute(p);
   std::cout << p << std::endl;
   if (!fs::exists(p)) {
     std::cerr << "file not found !" << std::endl;
