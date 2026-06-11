@@ -23,4 +23,5 @@ public:
   void addHeader(std::string, std::string);
 
   std::string tcpStringify();
+
 };

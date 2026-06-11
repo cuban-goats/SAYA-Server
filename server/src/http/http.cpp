@@ -4,14 +4,20 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <netinet/in.h>
+#include <optional>
+#include <ostream>
+#include <sstream>
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <cstring>
+namespace fs = std::filesystem;
 
 namespace http {
 
@@ -85,17 +91,17 @@ void handleConnection(int client_fd) {
       break;
     }
   }
-  process(buffer);
-  std::cout << "Client Request for: " << buffer << std::endl;
-  send(client_fd, "Hello from server", strlen("Hello from server"), 0);
+  process(raw, client_fd);
+  std::cout << "Client Request for:\n" << buffer << std::endl;
 }
 
-void process(std::string rawReq) {
+void process(std::string rawReq, int client_fd) {
   size_t methodEnd = rawReq.find(" ", 0);
   std::string method = rawReq.substr(0, methodEnd);
-
   if (method == "GET") {
     GetRes res = processGET(rawReq);
+    std::string resStr = res.tcpStringify();
+    send(client_fd, resStr.c_str(), resStr.size(), 0);
   } else if (method == "POST") {
     std::cout << "POST not implemented yet ..." << std::endl;
   } else {
@@ -105,17 +111,31 @@ void process(std::string rawReq) {
 
 GetRes processGET(std::string raw) {
   std::cout << "processing GET request ..." << std::endl;
-  GetRq get = *new GetRq(raw);
+  GetRq get(raw);
+  auto content = serve(get.rq.path);
 
   std::map<std::string, std::string> testHeaders = {
       {"Host", "host"}, {"User-Agent", "userAgent"}};
-  return *new GetRes(
-      {
-          "HTTP/1.1",
-          404,
-          "Not Found",
-      },
-      testHeaders, {"body"});
+
+  if (content) {
+    // search for 404 not found html page in website and then return that for
+    // body if it exists
+    return GetRes(
+        {
+            "HTTP/1.1",
+            200,
+            "OK",
+        },
+        testHeaders, {*content});
+  } else {
+    return GetRes(
+        {
+            "HTTP/1.1",
+            404,
+            "Not Found",
+        },
+        testHeaders, {"Error: File not found"});
+  }
 }
 
 void test() {
@@ -124,18 +144,50 @@ void test() {
       "userAgent\r\nAccept: accept\r\nAccept-Language: "
       "acceptLang\r\nAccept-Encoding: "
       "acceptEnc\r\nConnection: connected\r\n\r\n";
-  GetRq get = *new GetRq(testBuffer);
+  GetRq get(testBuffer);
+
+  auto content = serve(get.rq.path);
 
   std::map<std::string, std::string> testHeaders = {
       {"Host", "host"}, {"User-Agent", "userAgent"}};
-  GetRes res = *new GetRes(
-      {
-          "HTTP/1.1",
-          404,
-          "Not Found",
-      },
-      testHeaders, {"body"});
-  res.tcpStringify();
+
+  if (!content) {
+    GetRes res(
+        {
+            "HTTP/1.1",
+            404,
+            "Not Found",
+        },
+        testHeaders, {"body"});
+    res.tcpStringify();
+  } else {
+    GetRes res(
+        {
+            "HTTP/1.1",
+            200,
+            "OK",
+        },
+        testHeaders, {content->c_str()});
+    res.tcpStringify();
+  }
 }
+
+std::optional<std::string> serve(std::string filePath) {
+  fs::path p = "../public/";
+  if (!filePath.empty() && filePath[0] == '/') {
+    filePath = filePath.substr(1);
+  }
+  p.append(filePath);
+  std::cout << p << std::endl;
+  if (!fs::exists(p)) {
+    std::cerr << "file not found !" << std::endl;
+    return std::nullopt;
+  }
+  std::ifstream file(p);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  std::string content = buffer.str();
+  return content;
+};
 
 } // namespace http

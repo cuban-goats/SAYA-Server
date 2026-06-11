@@ -1,6 +1,7 @@
 #include "GetRes.hpp"
 #include <cstdio>
 #include <iostream>
+#include <ostream>
 #include <string>
 
 GetRes::GetRes(StatusLine sl, std::map<std::string, std::string> headers,
@@ -12,9 +13,7 @@ StatusLine GetRes::getStatusLine() { return sL; };
 std::map<std::string, std::string> GetRes::getHeader() { return headers; };
 
 Body GetRes::getBody() { return body; };
-size_t GetRes::getBodyBytes() {
-  return body.body.size();
-};
+size_t GetRes::getBodyBytes() { return body.body.size(); };
 
 void GetRes::setStatusLine(StatusLine status) { sL = status; };
 void GetRes::setHeader(std::map<std::string, std::string> h) { headers = h; };
@@ -39,3 +38,4 @@ std::string GetRes::tcpStringify() {
   std::cout << respString << std::endl;
   return respString;
 };
+

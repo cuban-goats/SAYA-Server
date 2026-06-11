@@ -37,7 +37,7 @@ int create(const char *url) {
 
   // Send data
   const char *testBuffer =
-      "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
+      "GET website/index.html HTTP/1.1\r\nHost: host\r\nUser-Agent: "
       "userAgent\r\nAccept: accept\r\nAccept-Language: "
       "acceptLang\r\nAccept-Encoding: "
       "acceptEnc\r\nConnection: connected\r\n\r\n";
