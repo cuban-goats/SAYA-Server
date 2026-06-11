@@ -31,9 +31,8 @@ std::string GetRes::tcpStringify() {
   for (auto const &[key, value] : headers) {
     respString.append(key + ": " + value + "\r\n");
   }
-  respString.append("\r\n\r\n");
+  respString.append("\r\n");
   respString.append(getBody().body);
-  respString.append("\r\n\r\n");
   printf("\n");
   std::cout << respString << std::endl;
   return respString;

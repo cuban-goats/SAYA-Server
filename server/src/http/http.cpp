@@ -114,8 +114,10 @@ GetRes processGET(std::string raw) {
   GetRq get(raw);
   auto content = serve(get.rq.path);
 
-  std::map<std::string, std::string> testHeaders = {
-      {"Host", "host"}, {"User-Agent", "userAgent"}};
+  std::map<std::string, std::string> headers = {{"Host", "host"},
+                                                {"User-Agent", "userAgent"}};
+  headers.insert({"Content-Type", getContentType(get.rq.path)});
+  // TODO: insert Content-Lenght header
 
   if (content) {
     // search for 404 not found html page in website and then return that for
@@ -126,7 +128,7 @@ GetRes processGET(std::string raw) {
             200,
             "OK",
         },
-        testHeaders, {*content});
+        headers, {*content});
   } else {
     return GetRes(
         {
@@ -134,7 +136,7 @@ GetRes processGET(std::string raw) {
             404,
             "Not Found",
         },
-        testHeaders, {"Error: File not found"});
+        headers, {"Error: File not found"});
   }
 }
 
@@ -173,7 +175,7 @@ void test() {
 }
 
 std::optional<std::string> serve(std::string filePath) {
-  fs::path p = "../public/";
+  fs::path p = "../public/"; // relative to ./server/build/
   if (!filePath.empty() && filePath[0] == '/') {
     filePath = filePath.substr(1);
   }
@@ -190,5 +192,22 @@ std::optional<std::string> serve(std::string filePath) {
   std::string content = buffer.str();
   return content;
 };
+
+std::string getContentType(fs::path file) {
+  std::string ext = file.extension().c_str();
+  if (ext == ".html")
+    return "text/html";
+  if (ext == ".css")
+    return "text/css";
+  if (ext == ".js")
+    return "application/javascript";
+  if (ext == ".json")
+    return "application/json";
+  if (ext == ".png")
+    return "image/png";
+  if (ext == ".jpg" || ext == ".jpeg")
+    return "image/jpeg";
+  return "appication/octet-stream";
+}
 
 } // namespace http
