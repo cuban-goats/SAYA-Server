@@ -19,4 +19,5 @@ void test();
 
 std::optional<std::string> serve(std::string);
 std::string getContentType(fs::path file);
+std::string getContentLenght(std::string content);
 } // namespace http

@@ -114,10 +114,10 @@ GetRes processGET(std::string raw) {
   GetRq get(raw);
   auto content = serve(get.rq.path);
 
-  std::map<std::string, std::string> headers = {{"Host", "host"},
-                                                {"User-Agent", "userAgent"}};
+  std::map<std::string, std::string> headers;
+  // Host header
   headers.insert({"Content-Type", getContentType(get.rq.path)});
-  // TODO: insert Content-Lenght header
+  headers.insert({"Content-Length", getContentLenght(*content)});
 
   if (content) {
     // search for 404 not found html page in website and then return that for
@@ -137,40 +137,6 @@ GetRes processGET(std::string raw) {
             "Not Found",
         },
         headers, {"Error: File not found"});
-  }
-}
-
-void test() {
-  std::string testBuffer =
-      "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
-      "userAgent\r\nAccept: accept\r\nAccept-Language: "
-      "acceptLang\r\nAccept-Encoding: "
-      "acceptEnc\r\nConnection: connected\r\n\r\n";
-  GetRq get(testBuffer);
-
-  auto content = serve(get.rq.path);
-
-  std::map<std::string, std::string> testHeaders = {
-      {"Host", "host"}, {"User-Agent", "userAgent"}};
-
-  if (!content) {
-    GetRes res(
-        {
-            "HTTP/1.1",
-            404,
-            "Not Found",
-        },
-        testHeaders, {"body"});
-    res.tcpStringify();
-  } else {
-    GetRes res(
-        {
-            "HTTP/1.1",
-            200,
-            "OK",
-        },
-        testHeaders, {content->c_str()});
-    res.tcpStringify();
   }
 }
 
@@ -208,6 +174,45 @@ std::string getContentType(fs::path file) {
   if (ext == ".jpg" || ext == ".jpeg")
     return "image/jpeg";
   return "appication/octet-stream";
+}
+
+std::string getContentLenght(std::string content) {
+  return std::to_string(content.size());
+}
+
+//------------------------------------------------------------
+void test() {
+  std::string testBuffer =
+      "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
+      "userAgent\r\nAccept: accept\r\nAccept-Language: "
+      "acceptLang\r\nAccept-Encoding: "
+      "acceptEnc\r\nConnection: connected\r\n\r\n";
+  GetRq get(testBuffer);
+
+  auto content = serve(get.rq.path);
+
+  std::map<std::string, std::string> testHeaders = {
+      {"Host", "host"}, {"User-Agent", "userAgent"}};
+
+  if (!content) {
+    GetRes res(
+        {
+            "HTTP/1.1",
+            404,
+            "Not Found",
+        },
+        testHeaders, {"body"});
+    res.tcpStringify();
+  } else {
+    GetRes res(
+        {
+            "HTTP/1.1",
+            200,
+            "OK",
+        },
+        testHeaders, {content->c_str()});
+    res.tcpStringify();
+  }
 }
 
 } // namespace http
