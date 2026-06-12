@@ -114,8 +114,10 @@ GetRes processGET(std::string raw) {
   GetRq get(raw);
   auto content = serve(get.rq.path);
 
-  std::map<std::string, std::string> testHeaders = {
-      {"Host", "host"}, {"User-Agent", "userAgent"}};
+  std::map<std::string, std::string> headers;
+  // Host header
+  headers.insert({"Content-Type", getContentType(get.rq.path)});
+  headers.insert({"Content-Length", getContentLenght(*content)});
 
   if (content) {
     // search for 404 not found html page in website and then return that for
@@ -126,7 +128,7 @@ GetRes processGET(std::string raw) {
             200,
             "OK",
         },
-        testHeaders, {*content});
+        headers, {*content});
   } else {
     return GetRes(
         {
@@ -134,10 +136,51 @@ GetRes processGET(std::string raw) {
             404,
             "Not Found",
         },
-        testHeaders, {"Error: File not found"});
+        headers, {"Error: File not found"});
   }
 }
 
+std::optional<std::string> serve(std::string filePath) {
+  fs::path p = "../public/"; // relative to ./server/build/
+  if (!filePath.empty() && filePath[0] == '/') {
+    filePath = filePath.substr(1);
+  }
+  p.append(filePath);
+  p = fs::absolute(p);
+  std::cout << p << std::endl;
+  if (!fs::exists(p)) {
+    std::cerr << "file not found !" << std::endl;
+    return std::nullopt;
+  }
+  std::ifstream file(p);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  std::string content = buffer.str();
+  return content;
+};
+
+std::string getContentType(fs::path file) {
+  std::string ext = file.extension().c_str();
+  if (ext == ".html")
+    return "text/html";
+  if (ext == ".css")
+    return "text/css";
+  if (ext == ".js")
+    return "application/javascript";
+  if (ext == ".json")
+    return "application/json";
+  if (ext == ".png")
+    return "image/png";
+  if (ext == ".jpg" || ext == ".jpeg")
+    return "image/jpeg";
+  return "appication/octet-stream";
+}
+
+std::string getContentLenght(std::string content) {
+  return std::to_string(content.size());
+}
+
+//------------------------------------------------------------
 void test() {
   std::string testBuffer =
       "GET /products HTTP/1.1\r\nHost: host\r\nUser-Agent: "
@@ -171,23 +214,5 @@ void test() {
     res.tcpStringify();
   }
 }
-
-std::optional<std::string> serve(std::string filePath) {
-  fs::path p = "../public/";
-  if (!filePath.empty() && filePath[0] == '/') {
-    filePath = filePath.substr(1);
-  }
-  p.append(filePath);
-  std::cout << p << std::endl;
-  if (!fs::exists(p)) {
-    std::cerr << "file not found !" << std::endl;
-    return std::nullopt;
-  }
-  std::ifstream file(p);
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  std::string content = buffer.str();
-  return content;
-};
 
 } // namespace http
