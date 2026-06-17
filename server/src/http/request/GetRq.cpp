@@ -77,6 +77,13 @@ void GetRq::printI(GetRq request) {
 
 void GetRq::byteEncode() {};
 
+void GetRq::handleWebSocket() {
+  // get required headers
+  //   if (m.contains("a")) {
+  //     int val = m["a"];
+  // }
+};
+
 //---------------------------------------------------------
 
 GetRq GetRq::parse(char buffer[1024]) {

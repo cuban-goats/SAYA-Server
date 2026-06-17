@@ -25,6 +25,8 @@ public:
   void printI(GetRq request);
   std::string getNextLine(const std::string &raw, size_t &pos);
 
+  void handleWebSocket();
+
   //----------------------------------------
   GetRq parse(char buffer[1024]);
   void skipNewLine(int i, char buffer[1024]);
