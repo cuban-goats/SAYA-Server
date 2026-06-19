@@ -163,14 +163,32 @@ std::string getContentType(fs::path file) {
   std::string ext = file.extension().c_str();
   if (ext == ".html")
     return "text/html";
+  if (ext == ".txt")
+    return "text/plain";
   if (ext == ".css")
     return "text/css";
   if (ext == ".js")
     return "application/javascript";
+  if (ext == ".mjs")
+    return "application/javascript";
   if (ext == ".json")
     return "application/json";
+  if (ext == ".xml")
+    return "application/xml";
   if (ext == ".png")
     return "image/png";
+  if (ext == ".svg")
+    return "image/svg+xml";
+  if (ext == ".webp")
+    return "image/webp";
+  if (ext == ".woff")
+    return "font/woff";
+  if (ext == ".woff2")
+    return "font/woff2";
+  if (ext == ".ttf")
+    return "font/ttf";
+  if (ext == ".ico")
+    return "image/x-icon";
   if (ext == ".jpg" || ext == ".jpeg")
     return "image/jpeg";
   return "appication/octet-stream";
@@ -179,6 +197,12 @@ std::string getContentType(fs::path file) {
 std::string getContentLenght(std::string content) {
   return std::to_string(content.size());
 }
+
+void handleWebSocket(GetRq rq) {
+  std::map<std::string, std::string> h = rq.getHeaders();
+  std::string host = h.at("Host");
+};
+
 
 //------------------------------------------------------------
 void test() {

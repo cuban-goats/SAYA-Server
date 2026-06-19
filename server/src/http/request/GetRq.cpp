@@ -76,7 +76,6 @@ void GetRq::printI(GetRq request) {
 }
 
 void GetRq::byteEncode() {};
-
 //---------------------------------------------------------
 
 GetRq GetRq::parse(char buffer[1024]) {
