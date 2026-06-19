@@ -1,3 +1,5 @@
+namespace websocket {
+
 class WebSocket {
 public:
   // store client_fd
@@ -5,5 +7,5 @@ public:
   void readFrame();
   void sendFrame();
   void close();
-
 };
+} // namespace websocket

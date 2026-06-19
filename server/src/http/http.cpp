@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <sys/socket.h>
+#include <thread>
 #include <unistd.h>
 
 namespace fs = std::filesystem;
@@ -68,10 +69,9 @@ int create() {
     }
     std::cout << " accepted connection from fd: " << server_fd << std::endl;
 
-    handleConnection(client_fd);
+    std::thread t(handleConnection, client_fd);
+    t.detach();
 
-    // Close socket
-    close(client_fd);
   }
   close(server_fd);
   return 0;
@@ -91,8 +91,10 @@ void handleConnection(int client_fd) {
       break;
     }
   }
+  // std::cout << "Client Request for:\n" << buffer << std::endl; // print incoming request
   process(raw, client_fd);
-  std::cout << "Client Request for:\n" << buffer << std::endl;
+
+  close(client_fd);
 }
 
 void process(std::string rawReq, int client_fd) {
@@ -202,7 +204,6 @@ void handleWebSocket(GetRq rq) {
   std::map<std::string, std::string> h = rq.getHeaders();
   std::string host = h.at("Host");
 };
-
 
 //------------------------------------------------------------
 void test() {
