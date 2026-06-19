@@ -15,7 +15,6 @@
 #include <optional>
 #include <ostream>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 #include <sys/socket.h>
 #include <thread>
