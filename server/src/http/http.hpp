@@ -16,7 +16,9 @@ void validate(std::string request);
 GetRes processGET(std::string raw);
 void process(std::string file, int client_fd);
 
-void handleWebSocket();
+void handleWebSocket(GetRq rq, int client_fd);
+
+bool contains(std::string s, std::string part);
 
 void test(GetRq rq);
 

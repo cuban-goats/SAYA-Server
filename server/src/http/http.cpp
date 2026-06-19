@@ -1,4 +1,6 @@
 #include "./http.hpp"
+#include "../websocket/WebSocket.hpp"
+#include "../websocket/WebSocketFrame.hpp"
 #include "./request//GetRq.hpp"
 #include "./response/GetRes.hpp"
 #include <cstddef>
@@ -13,6 +15,7 @@
 #include <optional>
 #include <ostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <sys/socket.h>
 #include <thread>
@@ -71,7 +74,6 @@ int create() {
 
     std::thread t(handleConnection, client_fd);
     t.detach();
-
   }
   close(server_fd);
   return 0;
@@ -91,7 +93,8 @@ void handleConnection(int client_fd) {
       break;
     }
   }
-  // std::cout << "Client Request for:\n" << buffer << std::endl; // print incoming request
+  // std::cout << "Client Request for:\n" << buffer << std::endl; // print
+  // incoming request
   process(raw, client_fd);
 
   close(client_fd);
@@ -102,6 +105,7 @@ void process(std::string rawReq, int client_fd) {
   std::string method = rawReq.substr(0, methodEnd);
   if (method == "GET") {
     GetRes res = processGET(rawReq);
+    // detect a websocket upgrade request
     std::string resStr = res.tcpStringify();
     send(client_fd, resStr.c_str(), resStr.size(), 0);
   } else if (method == "POST") {
@@ -113,7 +117,7 @@ void process(std::string rawReq, int client_fd) {
 
 GetRes processGET(std::string raw) {
   std::cout << "processing GET request ..." << std::endl;
-  GetRq get(raw);
+  GetRq get(raw); // possibly move back to process and pass GetRq to processGET
   auto content = serve(get.rq.path);
 
   std::map<std::string, std::string> headers;
@@ -200,9 +204,30 @@ std::string getContentLenght(std::string content) {
   return std::to_string(content.size());
 }
 
-void handleWebSocket(GetRq rq) {
+void handleWebSocket(GetRq rq, int client_fd) {
   std::map<std::string, std::string> h = rq.getHeaders();
-  std::string host = h.at("Host");
+  std::string wsUpgrade;
+  std::string wsConnection;
+  if ((h.find("Upgrade") != h.end()) && (h.find("Upgrade") != h.end())) {
+    wsUpgrade = h.at("Upgrade");
+    wsConnection = h.at("Connection");
+
+    if (contains(wsUpgrade, "websocket") && contains(wsConnection, "Upgrade")) {
+      websocket::WebSocket w(client_fd);
+    }
+  }
+};
+
+// move to own lib
+bool contains(std::string s, std::string part) {
+  std::string lowerCase = s;
+  for (char &c : lowerCase) {
+    c = std::tolower(static_cast<unsigned char>(c));
+  }
+  if (lowerCase.find(part) != std::string::npos) {
+    return true;
+  }
+  return false;
 };
 
 //------------------------------------------------------------
