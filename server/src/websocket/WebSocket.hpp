@@ -1,4 +1,7 @@
-namespace websocket {
+#include "../http/request/GetRq.hpp"
+
+namespace ws {
+bool isWebsocketUpgrade(GetRq rq);
 
 class WebSocket {
 public:
@@ -6,9 +9,10 @@ public:
   WebSocket(int client_fd);
 
   // store client_fd
+  void validate();
   void handshake();
   void readFrame();
   void sendFrame();
   void close();
 };
-} // namespace websocket
+} // namespace ws

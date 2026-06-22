@@ -11,6 +11,8 @@ add_executable(server
     src/http/http.cpp
     src/http/request/GetRq.cpp
     src/http/response/GetRes.cpp
+    src/util/Util.cpp
+    src/websocket/WebSocket.cpp
 )
 
 target_include_directories(server PRIVATE include)

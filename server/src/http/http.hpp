@@ -13,12 +13,10 @@ namespace http {
 int create();
 void handleConnection(int client_fd);
 void validate(std::string request);
-GetRes processGET(std::string raw);
+GetRes processGET(GetRq get);
 void process(std::string file, int client_fd);
 
 void handleWebSocket(GetRq rq, int client_fd);
-
-bool contains(std::string s, std::string part);
 
 void test(GetRq rq);
 
