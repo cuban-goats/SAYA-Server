@@ -4,6 +4,15 @@
 
 using namespace ws;
 
+void handleWebSocket(GetRq rq, int client_fd) {
+  if (isWebsocketUpgrade(rq)) {
+    // validate (get key, verify)
+    // handshake
+    WebSocket w(client_fd);
+    // respond with GetRes 101
+  }
+};
+
 WebSocket::WebSocket(int c_fd) : client_fd(c_fd) {};
 
 bool isWebsocketUpgrade(GetRq rq) {

@@ -105,7 +105,7 @@ void process(std::string rawReq, int client_fd) {
   if (method == "GET") {
     GetRq get(rawReq);
     // detect a websocket upgrade request
-    handleWebSocket(get, client_fd);
+    ws::handleWebSocket(get, client_fd);
 
     GetRes res = processGET(get);
 
@@ -205,13 +205,6 @@ std::string getContentType(fs::path file) {
 std::string getContentLenght(std::string content) {
   return std::to_string(content.size());
 }
-
-// return GetRes with 101
-void handleWebSocket(GetRq rq, int client_fd) {
-  if (ws::isWebsocketUpgrade(rq)) {
-    ws::WebSocket w(client_fd);
-  }
-};
 
 //------------------------------------------------------------
 void test() {
