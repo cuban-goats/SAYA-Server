@@ -1,7 +1,7 @@
 #include "Util.hpp"
 #include <string>
 
-using namespace util;
+namespace util {
 
 bool contains(std::string s, std::string part) {
   std::string lowerCase = s;
@@ -13,3 +13,5 @@ bool contains(std::string s, std::string part) {
   }
   return false;
 };
+
+} // namespace util
