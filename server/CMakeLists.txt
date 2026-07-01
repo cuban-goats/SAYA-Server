@@ -4,6 +4,11 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
 
+if(APPLE AND NOT CMAKE_OSX_ARCHITECTURES)
+  execute_process(COMMAND uname -m OUTPUT_VARIABLE HOST_ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set(CMAKE_OSX_ARCHITECTURES "${HOST_ARCH}" CACHE STRING "")
+endif()
+
 project(server CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -23,5 +28,8 @@ add_executable(server
 
 target_include_directories(server PRIVATE include)
 
+if(APPLE)
+  set(OPENSSL_ROOT_DIR "/opt/homebrew/opt/openssl" CACHE PATH "")
+endif()
 find_package(OpenSSL REQUIRED)
 target_link_libraries(server PRIVATE OpenSSL::SSL OpenSSL::Crypto)
